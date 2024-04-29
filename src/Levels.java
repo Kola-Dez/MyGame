@@ -16,6 +16,20 @@ public class Levels {
         this.all = new ArrayList<>();
         all.addAll(sprites);
     }
+    public ArrayList<Sprite> levelsPrint0() {
+
+        all.add(new Decor("bgBG1.gif", 0, 0, 1500, 800, false));
+
+        all.add(new Decor("platformDecor.png", 20, 700, 1000, 30));
+
+        traps.add(new Trap("DecorWhite.png", 300, 650, 80, 80));
+
+        all.add(new Skeleton(300, 500, 100, model));
+
+        all.addAll(traps);
+
+        return all;
+    }
     public ArrayList<Sprite> levelsPrint1() {
 
         all.add(new Decor("bgBG1.gif", 0, 0, 1500, 800, false));

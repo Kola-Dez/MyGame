@@ -1,11 +1,15 @@
+import java.util.HashMap;
 
 public class Main {
-    private static final int FIRST_LEVEL = 1;
-    private static final int FIRST_COIN_COUNT = 0;
-    private static final int KILLS_SKELETON_COUNT = 0;
-    public static void main(String[] args) {
 
-        Model model = new Model(FIRST_LEVEL, FIRST_COIN_COUNT, KILLS_SKELETON_COUNT);
+    static HashMap<String, Integer> resources;
+    public static void main(String[] args) {
+        resources = new HashMap<>();
+        resources.put("NOW_LEVEL", 1);
+        resources.put("MANY_COIN", 0);
+        resources.put("COINS", 0);
+        resources.put("MANY_KILL_SKELETON", 0);
+        Model model = new Model(resources);
         new Controller(model);
     }
 }

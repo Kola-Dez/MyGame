@@ -1,5 +1,6 @@
 import java.awt.Graphics;
 import java.awt.event.*;
+import java.util.HashMap;
 import java.util.Objects;
 import javax.swing.*;
 
@@ -8,16 +9,14 @@ public class Controller implements MouseListener, KeyListener, ActionListener {
     private final View view;
     private final Timer timer;
     private boolean paused;
-    private int NowLevel;
-    private int ManyCoin;
-    private int ManyKillSkeleton;
+    HashMap<String, Integer> resources;
 
 
     //  конструктор
     public Controller(Model model) {
         this.model = model;
-        NowLevel = 1;
         paused = false;
+        this.resources = model.getResources();
         view = new View(this);
         timer = new Timer(20, view);
         timer.start();
@@ -35,7 +34,9 @@ public class Controller implements MouseListener, KeyListener, ActionListener {
                     JOptionPane.showMessageDialog(view, Definitions.losingText, Definitions.gameName, JOptionPane.INFORMATION_MESSAGE, Definitions.fairBolIcon);
                     handleLoss(); // Обработка проигрыша
                 }
-                model = new Model(NowLevel, ManyCoin, ManyKillSkeleton);
+                model = new Model(this.resources);
+                this.resources.put("COINS", 0);
+
                 timer.start();
             } else {
                 model.update(g);
@@ -46,15 +47,16 @@ public class Controller implements MouseListener, KeyListener, ActionListener {
 
 
     public void handleWin() {
-        this.ManyCoin = Math.max(model.getManyCoin(), 0);
-        this.ManyKillSkeleton = Math.max(model.getManyKillSkeleton(), 0);
-        this.NowLevel++;
+        this.resources.put("MANY_COIN", Math.max(model.getManyCoin(), 0));
+        this.resources.put("MANY_KILL_SKELETON",Math.max(model.getManyKillSkeleton(), 0));
+        this.resources.put("NOW_LEVEL", this.resources.get("NOW_LEVEL") + 1);
+        this.resources.put("COINS", this.resources.get("MANY_COIN"));
     }
 
     public void handleLoss() {
-        this.ManyKillSkeleton = 0;
-        this.ManyCoin = 0;
-        this.NowLevel -= NowLevel <= 1 ? 0: 1;
+        this.resources.put("MANY_KILL_SKELETON", 0);
+        this.resources.put("MANY_COIN", model.getManyCoin() - model.getManyCoinNuw());
+        this.resources.put("NOW_LEVEL", (this.resources.get("NOW_LEVEL")) - ((this.resources.get("NOW_LEVEL")) <= 1 ? 0 : 1));
     }
 
 

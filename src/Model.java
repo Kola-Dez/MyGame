@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.lang.reflect.Method;
 
@@ -9,27 +10,26 @@ public class Model {
     private final ArrayList<Sprite> number;
     private final ArrayList<Sprite> traps;
     private final ArrayList<Sprite> coins;
-    private Sprite goblet;
     private boolean gameIsOver;
     private boolean won;
-    private int ManyCoin;
-    private int ManyKillSkeleton;
     private boolean isTakeCoin;
     private boolean isKillSkeleton;
+    private final HashMap<String, Integer> resources;
 
-    Model(int nowLevel, int ManyCoin, int ManyKillSkeleton){
+    private final HashMap<String, Sprite> SpriteObject;
+
+    Model(HashMap<String, Integer> res){
+        this.resources = res;
+        this.SpriteObject = new HashMap<>();
         gameIsOver = false;
         won = false;
-        this.ManyCoin = ManyCoin;
         isTakeCoin = false;
-        this.ManyKillSkeleton = ManyKillSkeleton;
         isKillSkeleton = false;
 
         traps = new ArrayList<>();
         coins = new ArrayList<>();
         number = new ArrayList<>();
-
-        levelLoad(nowLevel);
+        levelLoad(resources.get("NOW_LEVEL"));
     }
     public void levelLoad(int nowLevel){
         sprites = new ArrayList<>();
@@ -42,12 +42,12 @@ public class Model {
                     @SuppressWarnings("unchecked")
                     ArrayList<Sprite> newSprites = (ArrayList<Sprite>) method.invoke(levels);
                     sprites = newSprites;
-                    sprites.add(new Number(Definitions.imageNumbers + this.ManyCoin + ".png", 50, 0, 50 ,false));
+                    sprites.add(new Number(Definitions.imageNumbers + this.resources.get("MANY_COIN") + ".png", 50, 0, 50 ,false));
                     sprites.add(new Decor("CoinDecor.gif",0 , 0,50, false));
-                    sprites.add(new NumberSkeleton(Definitions.imageNumbers + this.ManyKillSkeleton + ".png", 200, 0, 50 ,false));
+                    sprites.add(new NumberSkeleton(Definitions.imageNumbers + this.resources.get("MANY_KILL_SKELETON") + ".png", 200, 0, 50 ,false));
                     sprites.add(new Decor("skeletonFaceDecor.gif",150 , 0,50, false));
-                    this.goblet = new Sprite("doorDecor.png", 100, 100).setX(1380).setY(35);
-                    sprites.add(goblet);
+                    this.SpriteObject.put("DOOR", new Sprite("doorDecor.png", 100, 100).setX(1380).setY(35));
+                    sprites.add(this.SpriteObject.get("DOOR"));
                     this.player = new Player();
                     sprites.add(player);
 
@@ -58,9 +58,9 @@ public class Model {
                 break;
             }else {
                 sprites.add(new Decor("GameOverBG.gif", 0, 0, 1500, 800, false));
-                sprites.add(new Number(Definitions.imageNumbers + this.ManyCoin + ".png", 50, 0, 50 ,false));
+                sprites.add(new Number(Definitions.imageNumbers + this.resources.get("MANY_COIN") + ".png", 50, 0, 50 ,false));
                 sprites.add(new Decor("CoinDecor.gif",0 , 0,50, false));
-                sprites.add(new NumberSkeleton(Definitions.imageNumbers + this.ManyKillSkeleton + ".png", 400, 0, 50 ,false));
+                sprites.add(new NumberSkeleton(Definitions.imageNumbers + this.resources.get("MANY_KILL_SKELETON") + ".png", 400, 0, 50 ,false));
                 sprites.add(new Decor("skeletonFaceDecor.gif",150 , 0,200, false));
             }
         }
@@ -74,13 +74,13 @@ public class Model {
             if (s instanceof Player) {
                 for (Sprite el : sprites) {
                     if (el instanceof Trap) {
-                        if (el.collidesWith((Player) s, s.getWidth() - Definitions.playerPadding)) {
+                        if (((Trap) el).collidesTrap((Player) s, Definitions.playerPaddingTop)) {
                             gameIsOver = true;
                             break;
                         }
                     }
                 }
-                if (s.overlaps(goblet)) {
+                if (s.overlaps(this.SpriteObject.get("DOOR"))) {
                     gameIsOver = true;
                     won = true;
                 } else {
@@ -91,15 +91,16 @@ public class Model {
                     }
                 }
             } else if (s instanceof Coin) {
-                if (s.collidesWith(player, 0)) {
-                    ManyCoin += ManyCoin >= 10 ? 0 : 1;
+                if (s.collidesWith(player)) {
+                    this.resources.put("COINS", this.resources.get("COINS") + 1);
+                    this.resources.put("MANY_COIN", this.resources.get("MANY_COIN") + (this.resources.get("MANY_COIN") >= 10 ? 0 : 1));
                     isTakeCoin = true;
                     iterator.remove();
                 }
             } else if (s instanceof Number) {
                 if (isTakeCoin) {
                     int tmp = sprites.indexOf(s);
-                    String text = Definitions.imageNumbers + ManyCoin + ".png";
+                    String text = Definitions.imageNumbers + this.resources.get("MANY_COIN") + ".png";
                     Number newNumber = new Number(text, 50, 0, 50, false);
                     sprites.set(tmp, newNumber);
                     isTakeCoin = false;
@@ -128,7 +129,7 @@ public class Model {
             }if (s instanceof NumberSkeleton) {
                 if (isKillSkeleton) {
                     int tmp = sprites.indexOf(s);
-                    String text = Definitions.imageNumbers + ManyKillSkeleton + ".png";
+                    String text = Definitions.imageNumbers + this.resources.get("MANY_KILL_SKELETON") + ".png";
                     NumberSkeleton newNumberSkeleton = new NumberSkeleton(text, 200, 0, 50 ,false);
                     sprites.set(tmp, newNumberSkeleton);
                     isKillSkeleton = false;
@@ -138,14 +139,17 @@ public class Model {
         }
     }
     public int getManyKillSkeleton(){
-        return this.ManyKillSkeleton;
+        return this.resources.get("MANY_KILL_SKELETON");
     }
     public void setKillSkeleton(){
-        this.ManyKillSkeleton += ManyKillSkeleton >= 10 ? 0 : 1;
+        this.resources.put("MANY_KILL_SKELETON", this.resources.get("MANY_KILL_SKELETON") + (this.resources.get("MANY_KILL_SKELETON") >= 10 ? 0 : 1));
         this.isKillSkeleton = true;
     }
     public int getManyCoin(){
-        return this.ManyCoin;
+        return this.resources.get("MANY_COIN");
+    }
+    public int getManyCoinNuw(){
+        return this.resources.get("COINS");
     }
     public ArrayList<Sprite> getSprite(){
         return this.sprites;
@@ -154,6 +158,9 @@ public class Model {
     // Проверка, выиграл ли игрок
     public boolean playerWon() {
         return won;
+    }
+    public HashMap<String, Integer> getResources(){
+        return this.resources;
     }
 
     // Обработка прыжка игрока

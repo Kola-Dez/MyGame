@@ -11,6 +11,9 @@ public class Sprite implements Serializable {
     protected int imageWidth, imageHeight;
     protected boolean collidable; // Столкновимый
     protected transient Image image;
+    protected boolean intersectsX;
+    protected boolean intersectsY;
+
     protected String currentImagePath;
 
     public Sprite(String imgName, int width, int height) {
@@ -95,18 +98,46 @@ public class Sprite implements Serializable {
 
     // Метод для проверки перекрытия спрайта с другим спрайтом
     public boolean overlaps(Sprite sprite) {
-        return (this.xPosition < sprite.xPosition + imageWidth && this.xPosition + imageWidth > sprite.xPosition
-                && this.yPosition < sprite.yPosition + imageHeight - 70
-                && this.yPosition + imageHeight - 20 > sprite.yPosition);
+        // Вычисляем координаты верхнего левого и нижнего правого углов текущего спрайта и спрайта sprite
+        int thisLeft = (int) this.xPosition;
+        int thisTop = (int) this.yPosition;
+        int thisRight = thisLeft + this.imageWidth;
+        int thisBottom = thisTop + this.imageHeight;
+
+        int spriteLeft = (int) sprite.xPosition;
+        int spriteTop = (int) sprite.yPosition;
+        int spriteRight = spriteLeft + sprite.imageWidth;
+        int spriteBottom = spriteTop + sprite.imageHeight;
+
+        // Проверяем перекрытие по осям X и Y
+        boolean overlapsX = thisRight > spriteLeft && spriteRight > thisLeft;
+        boolean overlapsY = thisBottom > spriteTop && spriteBottom > thisTop;
+
+        // Если границы пересекаются по обеим осям, значит происходит перекрытие
+        return overlapsX && overlapsY;
     }
 
+
     // Метод для проверки столкновения с игроком
-    public boolean collidesWith(Player player, int tmp) {
-        return player.getX() < xPosition + imageWidth -
-                tmp && player.getX() +
-                player.getWidth() - tmp > xPosition
-                && player.getY() < yPosition + imageHeight -
-                tmp && player.getY() +
-                player.getHeight() - tmp > yPosition;
+    public boolean collidesWith(Player player) {
+        // Получаем координаты верхнего левого угла игрока и элемента
+        int playerLeft = (int) player.getX();
+        int playerTop = (int) player.getY();
+        int elementLeft = (int) xPosition;
+        int elementTop = (int) yPosition;
+
+        // Вычисляем координаты нижнего правого угла игрока и элемента
+        int playerRight = playerLeft + player.getWidth();
+        int playerBottom = playerTop + player.getHeight();
+        int elementRight = elementLeft + imageWidth;
+        int elementBottom = elementTop + imageHeight;
+
+        // Проверяем пересечение по осям X и Y
+        boolean intersectsX = playerRight > elementLeft && elementRight > playerLeft;
+        boolean intersectsY = playerBottom > elementTop && elementBottom > playerTop;
+
+        // Если границы пересекаются по обеим осям, значит произошло столкновение
+        return intersectsX && intersectsY;
     }
+
 }
