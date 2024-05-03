@@ -1,6 +1,7 @@
 "# Warlock"
 "# MyGame"
 "# MyGame"
-                            ---Start---
-cd src && javac -d ../AllClass *.java && cd .. && java -classpath ./AllClass Main
-"# MyGame" 
+
+mysql> DROP TABLE player;
+
+mysql> CREATE TABLE player (id INT AUTO_INCREMENT PRIMARY KEY,name VARCHAR(255) NOT NULL, skeletonKill VARCHAR(255) NOT NULL,timeWin VARCHAR(255));
