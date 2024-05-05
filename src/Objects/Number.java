@@ -1,6 +1,6 @@
 package Objects;
 
-import kernel.Sprite;
+import Kernel.Sprite;
 
 public class Number extends Sprite {
     public Number(String imageName, int x, int y, int size, boolean collidable){

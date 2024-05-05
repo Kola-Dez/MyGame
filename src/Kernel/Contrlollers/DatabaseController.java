@@ -1,6 +1,4 @@
-package kernel.Contrlollers;
-
-import kernel.Definitions;
+package Kernel.Contrlollers;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

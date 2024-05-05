@@ -1,6 +1,6 @@
 package Objects;
 
-import kernel.Sprite;
+import Kernel.Sprite;
 
 public class Trap extends Sprite {
     public Trap(String imageName, int x, int y, int width, int height){

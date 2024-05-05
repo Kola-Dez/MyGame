@@ -1,9 +1,9 @@
-package kernel;
+package Kernel;
 
 import Levels.*;
 import Objects.*;
 import Objects.Number;
-import kernel.Contrlollers.ModelController;
+import Kernel.Contrlollers.ModelController;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,7 +41,7 @@ public class Model {
                     sprites.add(new Decor("CoinDecor.gif",0 , 0,50, false));
                     sprites.add(new NumberSkeleton(Definitions.imageNumbers + resources.get("MANY_KILL_SKELETON") + ".png", 200, 0, 50 ,false));
                     sprites.add(new Decor("skeletonFaceDecor.gif",150 , 0,50, false));
-                    this.SpriteObject.put("DOOR", new Finish("doorDecor.png", 300, 600, 100, 100, false));
+                    this.SpriteObject.put("DOOR", new Finish("doorDecor.png", 1400, 30, 100, 100, false));
                     sprites.add(this.SpriteObject.get("DOOR"));
                     this.player = new Player();
                     sprites.add(player);

@@ -1,4 +1,5 @@
-package kernel;
+package Kernel;
+import Kernel.Definitions;
 import Objects.Player;
 
 import java.awt.*;
@@ -8,6 +9,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public abstract class Sprite implements Serializable {
     protected double xPosition;
@@ -183,5 +186,35 @@ public abstract class Sprite implements Serializable {
 
         // Если границы пересекаются по обеим осям, значит произошло столкновение
         return intersectsX && intersectsY;
+    }
+    public boolean circleCollides(Player player) {
+        double playerCenterX = player.getX() + (double) player.getWidth() / 2;
+        double playerCenterY = player.getY() + (double) player.getHeight() / 2;
+        double elementCenterX = xPosition + (double) imageWidth / 2;
+        double elementCenterY = yPosition + (double) imageHeight / 2;
+
+        // Вычисляем расстояние между центрами окружностей
+        double distance = Math.sqrt(Math.pow(playerCenterX - elementCenterX, 2) + Math.pow(playerCenterY - elementCenterY, 2));
+
+        // Сумма радиусов окружностей
+        double playerRadius = (double) Math.min(player.getWidth(), player.getHeight()) / 2; // Мы берем минимальное значение из ширины и высоты, чтобы учесть случай, когда прямоугольник не является квадратом
+        double elementRadius = (double) Math.min(imageWidth, imageHeight) / 2;
+        double sumOfRadii = playerRadius + elementRadius;
+
+        // Проверяем, пересекаются ли окружности
+        return distance < sumOfRadii;
+    }
+
+    public void updateInfo(ArrayList<Sprite> sprites) {
+        boolean shouldStop = false;
+        for (Sprite s : sprites) {
+            if ((s != this) && s.isCollidable() && overlaps(s)) {
+                shouldStop = true;
+                break;
+            }
+        }
+        if (!shouldStop) {
+            setY(getY() + 5);
+        }
     }
 }

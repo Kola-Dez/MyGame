@@ -1,7 +1,7 @@
-package kernel.Contrlollers;
+package Kernel.Contrlollers;
 
 import Database.Connect;
-import kernel.Converter;
+import Kernel.Converter;
 
 import java.util.ArrayList;
 import java.util.HashMap;

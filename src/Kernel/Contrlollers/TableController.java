@@ -1,7 +1,7 @@
-package kernel.Contrlollers;
+package Kernel.Contrlollers;
 
 import Objects.Table;
-import kernel.Model;
+import Kernel.Model;
 
 import java.awt.*;
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
 package Objects;
 
-import kernel.Definitions;
-import kernel.Sprite;
+import Kernel.Definitions;
+import Kernel.Sprite;
 
 import java.awt.*;
 

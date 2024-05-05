@@ -1,6 +1,6 @@
-import kernel.Contrlollers.Controller;
-import kernel.Definitions;
-import kernel.Contrlollers.ModelController;
+import Kernel.Contrlollers.Controller;
+import Kernel.Definitions;
+import Kernel.Contrlollers.ModelController;
 
 public class Main {
     public static void main(String[] args) {

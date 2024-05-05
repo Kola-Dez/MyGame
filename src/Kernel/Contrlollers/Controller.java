@@ -1,9 +1,8 @@
-package kernel.Contrlollers;
+package Kernel.Contrlollers;
 
 import Database.Connect;
-import kernel.Converter;
-import kernel.Definitions;
-import kernel.View;
+import Kernel.Definitions;
+import Kernel.View;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -23,7 +22,8 @@ public class Controller implements KeyListener, ActionListener {
     private final View view;
     private boolean paused;
     private boolean isConnect = true;
-    //  конструктор
+
+    // Конструктор класса Controller
     public Controller(ModelController modelController) {
         this.requestDBController = new RequestDBController();
         this.resources = modelController.getResources();
@@ -35,10 +35,10 @@ public class Controller implements KeyListener, ActionListener {
         timerStart();
         testConnect();
     }
+
     // Метод для обновления графики
     public void update(Graphics graphics) {
         if (modelController != null) {
-//            view.addMouseMotionListener(new MyMouseListener());
             if (modelController.gameIsOver()) {
                 resetKeyStates();
                 timer.stop();
@@ -64,25 +64,21 @@ public class Controller implements KeyListener, ActionListener {
                         }
                     }
                     if (modelController.getIsRestart()){
-                        timer.stop();
-                        handRestart();
-                        resetKeyStates();
-                        modelController = new ModelController(this.resources);
-                        modelController.setIsRestart(false);
-                        this.result = null;
-                        testConnect();
-                        timer.start();
-                        timerStart();
+                        restartKeyStates();
                     }
                 }
             }
         }
     }
-    private int getTime(){
+
+    // Метод для получения текущего времени
+    private int getTime() {
         long endTime = System.nanoTime();
         double durationSeconds = (endTime - startTime) / 1e9;
         return (int)durationSeconds;
     }
+
+    // Метод для сортировки результата
     private ArrayList<HashMap<String, String>> getSortedResult() {
         ArrayList<HashMap<String, String>> sortedResult = new ArrayList<>(result);
         Collections.sort(sortedResult, new Comparator<HashMap<String, String>>() {
@@ -96,27 +92,28 @@ public class Controller implements KeyListener, ActionListener {
         return sortedResult;
     }
 
-    private void drawText(Graphics graphics) {
-        // Пример отображения текста "You WIN"
-        graphics.setColor(Color.RED);
-        graphics.setFont(new Font("Arial", Font.BOLD, 24));
-        graphics.drawString("Hello", 100, 100); // Позиция и текст
-    }
     private void resetKeyStates() {
-        // Сбрасываем состояние всех клавиш
         leftPressed = false;
         rightPressed = false;
     }
+    private void restartKeyStates(){
+        timer.stop();
+        handRestart();
+        resetKeyStates();
+        modelController = new ModelController(this.resources);
+        modelController.setIsRestart(false);
+        this.result = null;
+        testConnect();
+        timer.start();
+        timerStart();
+    }
+
+    // Обработчик события победы
     public void handleWin() {
-        JOptionPane.showMessageDialog(view,
-                Definitions.winningText,
-                Definitions.gameName,
-                JOptionPane.INFORMATION_MESSAGE,
-                Definitions.fairBolIcon
-        );
         checksWin();
     }
 
+    // Обработчик события поражения
     public void handleLoss() {
         int result = JOptionPane.showOptionDialog(
                 null,
@@ -146,21 +143,23 @@ public class Controller implements KeyListener, ActionListener {
         this.resources.put("MANY_KILL_SKELETON", 0);
     }
 
+    // Метод для запуска таймера
     private void timerStart(){
         this.startTime = System.nanoTime();
     }
+
+    // Метод для проверки подключения к базе данных
     private void testConnect(){
         Connect connect = new Connect();
         if (connect.getConnection() != null){
             connect.closeConnection();
         }else {
-            isConnect = false;
+            this.isConnect = false;
         }
     }
 
+    // Метод для обработки события перезапуска игры
     private void handRestart() {
-
-        // Отображаем диалоговое окно с таблицей
         int result = JOptionPane.showOptionDialog(
                 null,
                 Definitions.restartText,
@@ -181,6 +180,7 @@ public class Controller implements KeyListener, ActionListener {
         }
     }
 
+    // Метод для обработки события победы
     private void checksWin() {
         this.resources.put("MANY_COIN", Math.max(modelController.getManyCoin(), 0));
         this.resources.put("MANY_KILL_SKELETON", Math.max(modelController.getManyKillSkeleton(), 0));
@@ -188,6 +188,7 @@ public class Controller implements KeyListener, ActionListener {
         this.resources.put("COINS", this.resources.get("MANY_COIN"));
     }
 
+    // Метод для обработки события поражения
     private void checksDefeat() {
         this.resources.put("MANY_COIN", modelController.getManyCoin() - modelController.getManyCoinNuw());
         this.resources.put("NOW_LEVEL", Math.max(this.resources.get("NOW_LEVEL") - 1, 1));
@@ -209,6 +210,7 @@ public class Controller implements KeyListener, ActionListener {
         JOptionPane.showMessageDialog(view, Definitions.instructionText, Definitions.gameName, JOptionPane.INFORMATION_MESSAGE, Definitions.fairBolIcon);
     }
 
+    // Методы интерфейса KeyListener
     public void keyPressed(KeyEvent e) {
         if (!paused) {
             int keyCode = e.getKeyCode();
@@ -243,6 +245,10 @@ public class Controller implements KeyListener, ActionListener {
         updatePlayerDirection();
     }
 
+    public void keyTyped(KeyEvent e) {
+    }
+
+    // Обновление направления движения игрока
     private void updatePlayerDirection() {
         if (modelController.checksPlayer() != null) {
             if (leftPressed && !rightPressed) {
@@ -254,17 +260,6 @@ public class Controller implements KeyListener, ActionListener {
             }
         }
     }
-
-    // Неиспользуемые методы интерфейса KeyListener
-    public void keyTyped(KeyEvent e) {
-    }
-
-    // Неиспользуемые методы интерфейса MouseListener
-    public void mousePressed(MouseEvent e) {}
-    public void mouseReleased(MouseEvent e) {}
-    public void mouseEntered(MouseEvent e) {}
-    public void mouseExited(MouseEvent e) {}
-    public void mouseClicked(MouseEvent e) {}
 
     // Обработчик событий кнопок в пользовательском интерфейсе
     @Override

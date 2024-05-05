@@ -1,6 +1,6 @@
-package kernel;
+package Kernel;
 
-import kernel.Contrlollers.Controller;
+import Kernel.Contrlollers.Controller;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,10 +27,12 @@ public class View extends JFrame implements ActionListener {
         // Установка заголовка окна
         setTitle(Definitions.gameName);
 
-        // Получение размера экрана и расчет координат для размещения окна по центру
-        Toolkit toolkit = Toolkit.getDefaultToolkit(); // Получаем Toolkit для работы с графическими ресурсами
-        Dimension dimension = toolkit.getScreenSize(); // Получаем размер экрана
-        setBounds(dimension.width / 2 - Definitions.widthWindow / 2, dimension.height / 2 - Definitions.heightWindow / 2, Definitions.widthWindow, Definitions.heightWindow); // Устанавливаем координаты и размеры окна
+
+        setBounds(Definitions.dimension.width / 2 - Definitions.widthWindow / 2,
+                Definitions.dimension.height / 2 - Definitions.heightWindow / 2,
+                Definitions.widthWindow,
+                Definitions.heightWindow
+        ); // Устанавливаем координаты и размеры окна
 
         // Создание панели и добавление ее в контейнер окна
         MyPanel panel = new MyPanel(c); // Создаем новую панель, передавая ей контроллер

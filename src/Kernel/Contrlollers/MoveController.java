@@ -1,11 +1,11 @@
-package kernel.Contrlollers;
+package Kernel.Contrlollers;
 
 import Objects.*;
 import Objects.Button;
 import Objects.Number;
-import kernel.Definitions;
-import kernel.Model;
-import kernel.Sprite;
+import Kernel.Definitions;
+import Kernel.Model;
+import Kernel.Sprite;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -18,22 +18,27 @@ public class MoveController {
     private final HashMap<String, Integer> resources;
     private final Player player;
     private final Model model;
+
+    // Конструктор класса, инициализирует контроллер модели и другие необходимые переменные
     public MoveController(Graphics graphics, ModelController modelController) {
         this.modelController = modelController;
         this.sprites = modelController.getSprites();
         this.player = modelController.getPlayer();
         this.resources = modelController.getResources();
         this.model = modelController.getModel();
-        update(graphics);
+        update(graphics); // Вызываем метод обновления
     }
-    private void update(Graphics graphics){
+
+    // Метод обновления игрового состояния
+    private void update(Graphics graphics) {
         Iterator<Sprite> iterator = sprites.iterator();
         while (iterator.hasNext()) {
             Sprite s = iterator.next();
             if (s instanceof Player) {
+                // Обработка коллизий игрока с различными объектами
                 for (Sprite el : sprites) {
                     if (el instanceof Trap) {
-                        if (((Trap) el).collidesSize((Player) s, Definitions.playerPaddingTop)) {
+                        if (((Trap) el).circleCollides((Player) s)) {
                             modelController.setGameIsOver(true);
                             break;
                         }
@@ -44,29 +49,40 @@ public class MoveController {
                             break;
                         }
                     } else if (el instanceof Objects.Button) {
-                        ((Objects.Button) el).setMove(Definitions.defaultMovePress);
-                        if (((Objects.Button) el).collidesWidthAndHeight((Player) s, Definitions.playerPadding, Definitions.playerPaddingTop)) {
+                        if (((Objects.Button) el).collidesWidthAndHeight((Player) s, Definitions.playerPadding, Definitions.Zero)) {
                             el.updateImage("ButtonRestartPress.png");
                             if (((Objects.Button) el).getIsPress()) {
                                 ((Objects.Button) el).press();
-                                ((Objects.Button) el).setIsPress(false);
                                 modelController.setIsRestart(true);
                             }
                         } else {
                             if (!((Objects.Button) el).getIsPress()) {
-                                el.setY(el.getY() - ((Objects.Button) el).getMove());
-                                ((Objects.Button) el).setIsPress(true);
+                                ((Button) el).letGo();
+                                el.updateImage("ButtonRestart.png");
                             }
-                            el.updateImage("ButtonRestart.png");
                         }
+                    } else if (el instanceof IterBox){
+                        // Обработка столкновения с объектом IterBox
+                        ((IterBox) el).updateInfo(sprites); // Обновляем информацию о перемещении
+                        if (((IterBox) el).collidesSize((Player) s, 30)){ // Проверяем столкновение
+                            HashMap<String , Boolean> result = ((IterBox) el).IterCollidable((Player) s); // Получаем результат столкновения
+                            if (result.get("playerRight")){
+                                ((IterBox) el).moveLeft(); // Перемещаем IterBox влево
+                            }else if (result.get("playerLeft")){
+                                ((IterBox) el).moveRight(); // Перемещаем IterBox вправо
+                            }
+                        }
+                    } else if(el instanceof MovingPlatform){
+                        ((MovingPlatform) el).updatePosition();
                     }
                 }
-                ((Player) s).updateInfo();
-                fixCollisions();
+                ((Player) s).updateInfo(); // Обновляем информацию о игроке
+                fixCollisions(); // Исправляем коллизии
                 if (s.getY() >= Definitions.heightWindow || player.isDead()) {
                     modelController.setGameIsOver(true);
                 }
             }
+            // Обработка коллизий и других событий с объектами Coin, Number, FairBol, Skeleton и NumberSkeleton
             if (s instanceof Coin) {
                 if (((Coin) s).collidesSize((Player) player, Definitions.playerPadding)) {
                     this.resources.put("COINS", this.resources.get("COINS") + 1);
@@ -88,6 +104,7 @@ public class MoveController {
                     break;
                 }
             } else if (s instanceof Skeleton) {
+                s.updateInfo(sprites);
                 if (((Skeleton) s).isDead()) {
                     if (((Skeleton) s).getFramesSinceDeath() == Definitions.skeletonDeathLength) {
                         //sprites.remove(s);
@@ -114,52 +131,15 @@ public class MoveController {
                     modelController.setIsKillSkeleton(false);
                 }
             }
-            s.update(graphics);
+            s.update(graphics); // Обновляем графику спрайта
         }
     }
+
+    // Метод для исправления коллизий между игроком и другими объектами
     private void fixCollisions() {
-        // Перебираем все спрайты на игровом поле
         for (Sprite s : sprites) {
-            // Проверяем, не является ли текущий спрайт игроком
-            // Если это не игрок и спрайт является столкновимым и перекрывается с игроком, выполняем действия по исправлению коллизий
             if (!(s instanceof Player) && s.isCollidable() && player.overlaps(s)) {
-
-                // Игрок справа от спрайта, корректируем его положение влево
-                if (player.getPrevX() + player.getWidth() - Definitions.playerPadding < s.getX()) {
-                    player.setX(s.getX() - player.getWidth() + Definitions.playerPadding - 1);
-                }
-                // Игрок слева от спрайта, корректируем его положение вправо
-                else if (player.getPrevX() + Definitions.playerPadding > s.getX() + s.getWidth()) {
-                    player.setX(s.getX() + s.getWidth() - Definitions.playerPadding + 1);
-                }
-                // Игрок сверху над спрайтом
-                else if (player.getPrevY() + player.getHeight() < s.getY()) {
-
-                    // Если игрок смотрит вправо и находится в воздухе, устанавливаем изображение стоящего игрока вправо
-                    // Если игрок смотрит влево и находится на земле, устанавливаем изображение стоящего игрока влево
-                    if (player.isFacingRight() && player.isAirborne()) {
-                        player.setStandingRightImage();
-                    }
-                    else if (!player.isFacingRight() && !player.isAirborne()) {
-                        player.setStandingLeftImage();
-                    }
-
-                    // Устанавливаем игрока над спрайтом, устанавливаем флаг, что он на земле и разрешаем двойной прыжок
-                    player.setY(s.getY() - player.getHeight() - 1);
-                    player.setAirborne(false);
-                    player.setDoubleJump(true);
-
-                    // Если игрок движется вниз, обнуляем его вертикальную скорость
-                    if (player.getVelocity() > 0) {
-                        player.setVelocity(0);
-                    }
-                }
-                // Игрок под спрайтом
-                else if (player.getPrevY() + Definitions.playerPaddingTop > s.getY() + s.getHeight()) {
-                    // Устанавливаем игрока под спрайтом и устанавливаем отрицательную вертикальную скорость для имитации отскока от поверхности
-                    player.setY(s.getY() + s.getHeight() - Definitions.playerPaddingTop + 1);
-                    player.setVelocity((int) (-0.6 * player.getVelocity()));
-                }
+                player.handleCollisionWithSprite(s); // Обрабатываем коллизию
             }
         }
     }

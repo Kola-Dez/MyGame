@@ -1,9 +1,8 @@
 package Objects;
 
-import kernel.Contrlollers.ModelController;
-import kernel.Definitions;
-import kernel.Model;
-import kernel.Sprite;
+import Kernel.Contrlollers.ModelController;
+import Kernel.Definitions;
+import Kernel.Sprite;
 
 import javax.swing.*;
 import java.awt.*;

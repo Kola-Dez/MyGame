@@ -1,6 +1,6 @@
 package Objects;
 
-import kernel.Sprite;
+import Kernel.Sprite;
 
 public class Finish extends Sprite {
     public Finish(String imageName, int x, int y, int width, int height, boolean collidable){

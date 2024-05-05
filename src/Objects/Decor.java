@@ -1,6 +1,6 @@
 package Objects;
 
-import kernel.Sprite;
+import Kernel.Sprite;
 
 public class Decor extends Sprite {
     public Decor(String imageName, int x, int y, int width, int height, boolean collidable){

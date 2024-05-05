@@ -1,9 +1,9 @@
-package kernel.Contrlollers;
+package Kernel.Contrlollers;
 
 import Objects.*;
-import kernel.Definitions;
-import kernel.Model;
-import kernel.Sprite;
+import Kernel.Definitions;
+import Kernel.Model;
+import Kernel.Sprite;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -91,11 +91,6 @@ public class ModelController {
     public ArrayList<Sprite> getSprites(){
         return this.sprites;
     }
-    public void throwFairBol() {
-        if (FairBol.getCount() < 3) {
-            sprites.add(new FairBol(player.getX(), player.getY(), player.isFacingRight()));
-        }
-    }
     public int getManyKillSkeleton(){
         return this.resources.get("MANY_KILL_SKELETON");
     }
@@ -114,5 +109,11 @@ public class ModelController {
     }
     public void setIsRestart(boolean is){
         this.isRestart = is;
+    }
+
+    public void throwFairBol() {
+        if (FairBol.getCount() < 3) {
+            sprites.add(new FairBol(player.getX(), player.getY(), player.isFacingRight()));
+        }
     }
 }
