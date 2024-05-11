@@ -74,7 +74,7 @@ public class Levels {
         all.add(new Decor("fikusDecor.png", 800, 440, 40, 40, false));
 
         traps.add(new Trap("fairDecor.gif", 300, 670, 40, 40));
-        traps.add(new Trap("fairDecor.gif", 700, 160, 40, 40));
+        traps.add(new Trap("fairDecor.gif", 700, 170, 40, 40));
         all.addAll(traps);
 
         coin.add(new Coin("CoinDecor.gif", 0, 0, 50, false));
